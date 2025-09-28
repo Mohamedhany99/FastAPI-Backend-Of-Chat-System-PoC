@@ -8,7 +8,7 @@ A minimal 1:1 chat microservice demonstrating auth, messaging, Redis caching, an
 - Redis caching for recent conversation window
 - Fixed-window rate limits: login (5/min per IP), send (30/min per user)
 - Plain-text logging with request IDs
-- Health endpoint `/healthz`
+- Health endpoint `/health`
 
 ## API
 - POST `/register`: { username, email, password } -> 201 UserPublic
@@ -20,12 +20,17 @@ A minimal 1:1 chat microservice demonstrating auth, messaging, Redis caching, an
 Environment variables (example values shown):
 - `SECRET_KEY=please-change`
 - `ACCESS_TOKEN_EXP_MINUTES=60`
+- `RATE_LIMIT_LOGIN_PER_MIN=5`
+- `RATE_LIMIT_SEND_PER_MIN=30`
 - `DB_USER=postgres`
 - `DB_PASSWORD=postgres`
 - `DB_HOST=localhost`
 - `DB_PORT=5432`
 - `DB_NAME=chat_service`
 - `REDIS_URL=redis://localhost:6379/0`
+  
+Optional:
+- `DATABASE_URL_ENV` (overrides full DB URL; tests use `sqlite+aiosqlite:///:memory:`)
 
 You can place these in a `.env` file (not committed).
 
@@ -56,6 +61,19 @@ docker run --rm -p 8000:8000 \
 poetry run black .
 poetry run mypy app
 ```
+
+## Testing
+- The test suite uses an in-memory SQLite database and a fake Redis.
+- No extra services are required to run tests.
+
+Run tests:
+```bash
+poetry run pytest -q
+```
+
+Notes:
+- Tests set `DATABASE_URL_ENV=sqlite+aiosqlite:///:memory:` automatically.
+- For manual testing with Postgres/Redis, copy `.env.example` to `.env`, set values, then run the server.
 
 ## Minimal Tests (smoke)
 ```bash
