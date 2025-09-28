@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import AsyncIterator, Any
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, status, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
@@ -25,14 +26,16 @@ async def get_redis() -> AsyncIterator[Any]:
         await client.close()
 
 
+bearer_scheme = HTTPBearer(auto_error=False)
+
+
 async def get_current_user(
-    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Security(bearer_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    auth = request.headers.get("Authorization")
-    if not auth or not auth.lower().startswith("bearer "):
+    if credentials is None or not credentials.scheme or credentials.scheme.lower() != "bearer":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    token = auth.split(" ", 1)[1]
+    token = credentials.credentials
     try:
         payload = decode_access_token(token)
     except ValueError:

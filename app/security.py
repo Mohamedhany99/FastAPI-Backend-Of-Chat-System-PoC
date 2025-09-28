@@ -9,7 +9,8 @@ from passlib.context import CryptContext
 from .settings import get_settings
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use bcrypt_sha256 to support passwords longer than 72 bytes safely.
+pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 
 def hash_password(plain: str) -> str:
