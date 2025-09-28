@@ -30,11 +30,16 @@ class Settings(BaseSettings):
     db_port: Optional[int] = None
     db_name: Optional[str] = None
 
+    # Direct database URL override (useful for tests)
+    database_url_env: Optional[str] = None
+
     # Redis
     redis_url: str = "redis://localhost:6379/0"
 
     @property
     def database_url(self) -> str:
+        if self.database_url_env:
+            return self.database_url_env
         if not all([self.db_user, self.db_password, self.db_host, self.db_port, self.db_name]):
             return "sqlite+aiosqlite:///./chat_service.db"
         return (
