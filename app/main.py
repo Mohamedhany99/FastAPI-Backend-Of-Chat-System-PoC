@@ -4,8 +4,8 @@ import logging
 import time
 import uuid
 from contextvars import ContextVar
-from typing import AsyncIterator, Callable, Mapping, Awaitable
-from contextlib import asynccontextmanager, AbstractAsyncContextManager
+from typing import AsyncIterator, Callable, Awaitable
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +50,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
+    # Use provided settings (e.g., tests) or global settings
     settings = settings or get_settings()
 
     app = FastAPI(
@@ -84,8 +85,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(auth.router, prefix="")
     app.include_router(messages.router, prefix="")
 
-    @app.get("/healthz")
-    async def healthz() -> dict[str, str]:
+    @app.get("/health")
+    async def check_health() -> dict[str, str]:
         return {"status": "ok"}
 
     return app
