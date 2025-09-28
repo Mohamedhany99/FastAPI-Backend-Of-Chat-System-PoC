@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..cache import get_conversation_cache, push_conversation_cache, set_conversation_cache
@@ -52,7 +51,9 @@ async def send(
         created_at=msg.created_at,
     )
 
-    await push_conversation_cache(redis, user.id, payload.recipient_id, resp.model_dump())
+    await push_conversation_cache(
+        redis, user.id, payload.recipient_id, resp.model_dump(mode="json")
+    )
     return resp
 
 
@@ -84,6 +85,8 @@ async def messages(
         for m in msgs
     ]
     if offset == 0:
-        await set_conversation_cache(redis, user.id, peer_id, [r.model_dump() for r in resp])
+        await set_conversation_cache(
+            redis, user.id, peer_id, [r.model_dump(mode="json") for r in resp]
+        )
     total = await svc.count_history(user.id, peer_id)
     return MessagesPage(messages=resp, limit=limit, offset=offset, total=total)
