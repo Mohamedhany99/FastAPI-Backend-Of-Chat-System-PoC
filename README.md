@@ -35,6 +35,27 @@ Optional:
 You can place these in a `.env` file (not committed).
 
 ## Local Run
+
+Create and activate a Python 3.11 virtual environment:
+
+- Linux/macOS (bash/zsh):
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+```
+
+- Windows (PowerShell):
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+- Windows (CMD):
+```bat
+py -3.11 -m venv .venv
+.venv\Scripts\activate.bat
+```
+
 Using Poetry:
 ```bash
 poetry install
