@@ -29,6 +29,9 @@ httpx = "^0.28.1"
 types-redis = "^4.6.0.20241004"
 types-python-jose = "^3.5.0.20250531"
 types-passlib = "^1.7.7.20250602"
+pytest-asyncio = "^1.2.0"
+faker = "^37.8.0"
+asgi-lifespan = "^2.1.0"
 
 [tool.black]
 line-length = 100
@@ -49,6 +52,7 @@ plugins = []
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-q"
+pythonpath = ["."]
 
 [tool.poetry.scripts]
 chat-service = "app.main:run"
